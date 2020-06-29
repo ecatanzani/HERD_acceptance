@@ -1,0 +1,97 @@
+Plugin HerdDataProviders
+Plugin RootDataProvider
+Plugin HerdDataObjectsDict
+Plugin CommonAlgo
+Plugin RootPersistence
+Plugin HerdAlgorithms
+
+DataProvider RootDataProvider rootProvider list.small
+  AttachToStore   evStore    event
+  AttachToStore   globStore  global
+
+Persistence RootPersistenceService rootPersistence output.root
+   Book h*       global globStore
+   Book g*       global globStore
+
+Persistence TreePersistence treePersistence tree.root
+   Set BookMCtruthProcess true
+   Set BookCaloGeomFidVolume true
+   Set BookCaloGlob true
+   Set BookCaloAxis true
+
+EventLoop #0 100
+
+  #Compute the variables for Calo acceptance check
+  Algo CaloTrackInfoAlgo caloTrackInfoAlgo
+
+  #Compute the variables for St acceptance check
+  Algo StkIntersectionsAlgo stkTrackInfoAlgo
+
+  Algo CaloAxisAlgo caloAxisAlgo
+  Set edepthreshold 0.020 #GeV ~ 1/3 MIP
+
+
+  Sequence all
+
+  Algo MCGenSpectrum mcgenspectrum
+  Set momrange {10,1000}
+
+  Algo EneHisto hall
+  Set axispar {75,1e+1,1e+4}
+  Set logaxis true
+  Set title AllEvents
+  Set var MCmom
+
+    Sequence mctrack 
+
+    Algo MCtruthProcessStore MCtruthProcessStore
+    Algo MCtruthProcess mctruthprocess
+    Set filterenable false
+    Set notfrombottom true
+    Set mincalotrackx0 10
+
+    Algo EneHisto hmctrack
+    Set axispar {75,1e+1,1e+4}
+    Set logaxis true
+    Set title MCtrack
+    Set var MCmom
+
+      Sequence calofidvolume
+
+      Algo CaloGeomFidVolumeStore caloGeomFidVolumeStore
+      Algo CaloGeomFidVolumeAlgo  caloGeomFidVolumeAlgo
+        Set filterenable false
+        Set alpha 1.0
+	Set checkext false
+	Set checkint true
+
+      Algo EneHisto hcalofidvolume
+        Set axispar {75,1e+1,1e+4}
+        Set logaxis true
+        Set title CALO_fid_volume
+        Set var MCmom
+        
+        Sequence caloglob
+
+	Algo CaloGlobStore caloGlobStore
+        Algo CaloGlob caloGlob
+      	     Set filterenable false
+	     Set calohitscutmc true
+
+	Algo CaloAxis caloAxis #needed to fill the caloaxis branches in tree
+
+	Algo EneHisto hcaloglob
+        Set axispar {75,1e+1,1e+4}
+        Set logaxis true
+        Set title CALO_glob
+        Set var MCmom
+
+        Algo TreePersistenceHelper treePersistenceHelper
+ 	     Set FillTreeThisEvent true
+	
+    	    
+        EndSequence #caloglob
+      EndSequence #calofidvolume
+    EndSequence #mctrack
+  EndSequence #all
+
