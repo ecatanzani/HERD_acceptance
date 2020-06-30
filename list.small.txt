@@ -1,0 +1,1 @@
+/home/myRepo/HERD_acceptance/data/electrons_sphere_10GeV_1000GeV_E-1_0049_6108_8756.dig.root
