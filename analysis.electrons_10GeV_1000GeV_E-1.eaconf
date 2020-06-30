@@ -29,12 +29,12 @@ EventLoop
 
   # Compute generation spectrum
   Algo mcGenSpectrum mcgenspectrum
-  Set axispar {100,1e+1,1e+4}
+  Set axispar {100,1e+1,1e+3}
   Set logaxis true
-  Set momrange {1e+1,1e+4}
+  Set momrange {1e+1,1e+3}
 
   Algo mcEnergyHisto hall
-  Set axispar {100,1e+1,1e+4}
+  Set axispar {100,1e+1,1e+3}
   Set logaxis true
   Set title AllEvents
 
@@ -47,7 +47,7 @@ EventLoop
     Set mincalotrackx0 10
 
     Algo mcEnergyHisto hmctrack
-    Set axispar {100,1e+1,1e+4}
+    Set axispar {100,1e+1,1e+3}
     Set logaxis true
     Set title MCtrack
 
@@ -61,9 +61,14 @@ EventLoop
 	      Set checkint true
 
       Algo mcEnergyHisto hcalofidvolume
-        Set axispar {100,1e+1,1e+4}
+        Set axispar {100,1e+1,1e+3}
         Set logaxis true
         Set title CALO_fid_volume
+
+      Algo mcAngleDistribution hAngularDistribution
+        Set energy_axispar {100, 1e+1, 1e+3}
+        Set logaxis true
+        Set title mcAngularDistribution_eBin
 
       EndSequence #calofidvolume
     EndSequence #mctrack
