@@ -28,7 +28,7 @@ void buildAcceptance(const char* inFilePath, const char* outFilePath)
 
 	myInFile.Close();
 
-	auto genSurface = 4*TMath::Pi()*genRadius;
+	auto genSurface = 4*TMath::Pi()*pow(genRadius,2);
 	auto scaleFactor = TMath::Pi()*genSurface;
 
 	selected_events->Divide(generated_events);
