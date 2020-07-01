@@ -17,7 +17,7 @@ void buildAcceptance(const char* inFilePath, const char* outFilePath)
 		exit(123);
 	}
 
-	TH1D* selected_events = static_cast<TH1D*>(myInFile.Get("hcalofidvolume"));
+	TH1D* selected_events = static_cast<TH1D*>(myInFile.Get("h_calo_filtered_fidvolume"));
 	TH1D* generated_events = static_cast<TH1D*>(myInFile.Get("h_mcgenspectrum"));
 	
 	selected_events->Sumw2();
