@@ -94,7 +94,7 @@ bool mcEnergyHisto::Finalize()
 		return false;
 	}
 
-	globStore->AddObject(GetName(), histo);
+	globStore->AddObject(histo->GetName(), histo);
 	
 	return true;
 }
