@@ -124,7 +124,7 @@ namespace Herd
 		// Create the histos
 		for (auto ebIdx=0; ebIdx< histo.size(); ++ebIdx)
 		{
-			std::string histo_name = GetName() + "_energyBin_" + std::to_string(ebIdx);
+			std::string histo_name = "h_" + GetName() + "_energyBin_" + std::to_string(ebIdx);
 			histo[ebIdx] = std::make_shared<TH2D> (
 				histo_name.c_str(), 
 				title.c_str(), 
