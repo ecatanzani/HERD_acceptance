@@ -15,62 +15,60 @@ Persistence RootPersistenceService rootPersistence output.root
 
 EventLoop
 
-  #Compute the variables for CALO acceptance check
-  Algo CaloTrackInfoAlgo caloTrackInfoAlgo
+	#Compute the variables for CALO acceptance check
+  	Algo CaloTrackInfoAlgo caloTrackInfoAlgo
 
-  #Compute the variables for STK acceptance check
-  Algo StkIntersectionsAlgo stkTrackInfoAlgo
+  	#Compute the variables for STK acceptance check
+  	Algo StkIntersectionsAlgo stkTrackInfoAlgo
 
-  Sequence acceptance
+  	Sequence acceptance
 
-  # Cut about polar angle
+  	# Compute generation spectrum
+  	Algo mcGenSpectrum mcgenspectrum
+	  	Set logaxis true
+  		Set axispar {50, 1e+1, 1e+3}
+  		Set momrange {1e+1,1e+3}
+
+  	# Cut about polar angle
 	Algo PolarAngleCut polarAngleCut
-		Set maxTheta 112.
+		Set maxTheta 112
 
-  # Compute generation spectrum
-  Algo mcGenSpectrum mcgenspectrum
-  Set axispar {100,1e+1,1e+3}
-  Set logaxis true
-  Set momrange {1e+1,1e+3}
-
-  Algo mcEnergyHisto hall
-  Set axispar {100,1e+1,1e+3}
-  Set logaxis true
-  Set title AllEvents
-
-    Sequence mctrack 
-
-    Algo MCtruthProcessStore MCtruthProcessStore
+	# Plot the polar filtered events
+  	Algo mcEnergyHisto polar_filtered
+  		Set axispar {50, 1e+1, 1e+3}
+  		Set logaxis true
+  		Set title mcPolarFilteredEvents
+    
+	# Filter X0 calo tracks
     Algo MCtruthProcess mctruthprocess
-    Set filterenable false
-    Set notfrombottom true
-    Set mincalotrackx0 10
+    	Set filterenable true
+    	Set notfrombottom true
+    	Set mincalotrackx0 20
+		Set minstkintersections 10
 
-    Algo mcEnergyHisto hmctrack
-    Set axispar {100,1e+1,1e+3}
-    Set logaxis true
-    Set title MCtrack
+	# Plot filtered X0 calo tracks
+    Algo mcEnergyHisto X0_filtered
+    	Set axispar {50, 1e+1, 1e+3}
+    	Set logaxis true
+    	Set title MCtrack
 
-      Sequence calofidvolume
-
-      Algo CaloGeomFidVolumeStore caloGeomFidVolumeStore
-      Algo CaloGeomFidVolumeAlgo  caloGeomFidVolumeAlgo
+	# Filter BGO fiducial volume  
+    Algo CaloGeomFidVolumeAlgo  caloGeomFidVolumeAlgo
         Set filterenable true
-        Set alpha 1.0
-	      Set checkext false
-	      Set checkint true
+	    Set checkext false
+	    Set checkint true
 
-      Algo mcEnergyHisto hcalofidvolume
-        Set axispar {100,1e+1,1e+3}
+	# Plot filtered BGO fiducial volume events
+    Algo mcEnergyHisto calo_filtered_fidvolume
+        Set axispar {50, 1e+1, 1e+3}
         Set logaxis true
         Set title CALO_fid_volume
 
-      Algo mcAngleDistribution hAngularDistribution
-        Set energy_axispar {100, 1e+1, 1e+3}
+	# Plot events angular distribution for energy bin
+    Algo mcAngleDistribution angularDistribution
+        Set energy_axispar {50, 1e+1, 1e+3}
         Set logaxis true
         Set title mcAngularDistribution_eBin
 
-      EndSequence #calofidvolume
-    EndSequence #mctrack
-  EndSequence #acceptance
+  	EndSequence #acceptance
 
