@@ -1,5 +1,5 @@
 // Example headers
-#include "MCGenSpectrum.h"
+#include "mcGenSpectrum.h"
 
 // Root headers
 #include "TH1D.h"
