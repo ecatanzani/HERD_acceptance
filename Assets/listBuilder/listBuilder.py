@@ -14,12 +14,13 @@ def getListOfFiles(opts):
         for tmpdir in dirs:
             if opts.verbose:
                 print('Searching for files in {}'.format(tmpdir))
-            tmpfiles = [ file for file in os.listdir(tmpdir) if os.path.isfile(tmpdir + "/" + file) and file.endswith('.root') ]
+            path = opts.input + "/" + tmpdir + "/"
+            tmpfiles = [ path + file for file in os.listdir(tmpdir) if os.path.isfile(path + file) and file.endswith('.root') ]
             if tmpfiles:
                 for file in tmpfiles:
                     fileList.append(file)
     else:
-        tmpfiles = [ file for file in os.listdir(opts.input) if os.path.isfile(opts.input + "/" + file) and file.endswith('.root') ]
+        tmpfiles = [ opts.input + "/" + file for file in os.listdir(opts.input) if os.path.isfile(opts.input + "/" + file) and file.endswith('.root') ]
         if tmpfiles:
             for file in tmpfiles:
                 fileList.append(file)
