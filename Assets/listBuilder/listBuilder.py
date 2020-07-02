@@ -47,7 +47,7 @@ def main(args=None):
     # Write files to list
     with open(opts.output, "w") as myList:
         for elm in dataList:
-            myList.write(elm)
+            myList.write(elm + "\n")
 
 
 if __name__ == "__main__":
