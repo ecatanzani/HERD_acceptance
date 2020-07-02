@@ -10,17 +10,19 @@ start = datetime.now()
 def getListOfFiles(opts):
     fileList = []
     if opts.subdirs:
-        dirs = [ opts.input + "/" + tmpDir for tmpDir in os.listdir(opts.input) if os.path.isdir(opts.input + "/" + tmpDir) ]
+        prefix = opts.input + "/"
+        dirs = [ prefix + tmpDir for tmpDir in os.listdir(opts.input) if os.path.isdir(prefix + tmpDir) ]
         for tmpdir in dirs:
             if opts.verbose:
                 print('Searching for files in {}'.format(tmpdir))
-            path = opts.input + "/" + tmpdir + "/"
-            tmpfiles = [ path + file for file in os.listdir(tmpdir) if os.path.isfile(path + file) and file.endswith('.root') ]
+            prefix = tmpdir + "/"
+            tmpfiles = [ prefix + file for file in os.listdir(tmpdir) if os.path.isfile(prefix + file) and file.endswith('.root') ]
             if tmpfiles:
                 for file in tmpfiles:
                     fileList.append(file)
     else:
-        tmpfiles = [ opts.input + "/" + file for file in os.listdir(opts.input) if os.path.isfile(opts.input + "/" + file) and file.endswith('.root') ]
+        prefix = opts.input + "/"
+        tmpfiles = [ prefix + file for file in os.listdir(opts.input) if os.path.isfile(prefix + file) and file.endswith('.root') ]
         if tmpfiles:
             for file in tmpfiles:
                 fileList.append(file)
