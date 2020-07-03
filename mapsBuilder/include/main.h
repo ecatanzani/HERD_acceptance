@@ -9,5 +9,10 @@
 
 #pragma once
 
+extern void evaluateEventMap(
+    const std::string accPath,
+    const std::string telPath,
+    const std::string outPath,
+    const bool verbose);
 
 #endif

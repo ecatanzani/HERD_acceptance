@@ -47,5 +47,12 @@ int main(int argc, char** argv)
     if (opt.getFlag("verbose") || opt.getFlag('v'))
         verbose = opt.getFlag('v');
 
+    evaluateEventMap(
+        accPath,
+        telPath,
+        outPath,
+        verbose
+    );
+
     return 0;
 }
