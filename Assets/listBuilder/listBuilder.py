@@ -16,13 +16,13 @@ def getListOfFiles(opts):
             if opts.verbose:
                 print('Searching for files in {}'.format(tmpdir))
             prefix = tmpdir + "/"
-            tmpfiles = [ prefix + file for file in os.listdir(tmpdir) if os.path.isfile(prefix + file) and file.endswith('.root') ]
+            tmpfiles = [ prefix + file for file in os.listdir(tmpdir) if os.path.isfile(prefix + file) and file.endswith(opts.task) ]
             if tmpfiles:
                 for file in tmpfiles:
                     fileList.append(file)
     else:
         prefix = opts.input + "/"
-        tmpfiles = [ prefix + file for file in os.listdir(opts.input) if os.path.isfile(prefix + file) and file.endswith('.root') ]
+        tmpfiles = [ prefix + file for file in os.listdir(opts.input) if os.path.isfile(prefix + file) and file.endswith(opts.task) ]
         if tmpfiles:
             for file in tmpfiles:
                 fileList.append(file)
@@ -41,6 +41,8 @@ def main(args=None):
                         action='store_true', help='run in high verbosity mode')
     parser.add_argument("-s", "--subdirs", dest='subdirs', default=False,
                         action='store_true', help='search in subdirs')
+    parser.add_argument("-t", "--task", dest='task', default=False,
+                        action='store_true', help='root/csv task')
     
     opts = parser.parse_args(args)
 
