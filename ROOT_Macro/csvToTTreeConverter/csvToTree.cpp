@@ -11,7 +11,7 @@
 #define words_in_line 54
 #define glat_word_counter 23
 
-std::istringstream readStreamFromFile(std::string input_RTI_path)
+std::string readStreamFromFile(std::string input_RTI_path)
 {
     std::ifstream input_file(input_RTI_path.c_str());
     if (!input_file.is_open())
@@ -21,8 +21,7 @@ std::istringstream readStreamFromFile(std::string input_RTI_path)
     }
     std::string input_string((std::istreambuf_iterator<char>(input_file)), (std::istreambuf_iterator<char>()));
     input_file.close();
-    std::istringstream input_stream(input_string);
-    return input_stream;
+    return input_string;
 }
 
 void parse_stream(
@@ -31,12 +30,12 @@ void parse_stream(
     double &glon, 
     TTree &RTI_tree)
 {
-    auto input_stream = readStreamFromFile(input_RTI_path);
+    std::istringstream input_stream(readStreamFromFile(input_RTI_path));
     std::string tmp_RTI_file;
 
     while (input_stream >> tmp_RTI_file)
     {
-        auto rti_stream = readStreamFromFile(tmp_RTI_file);
+        std::istringstream rti_stream(readStreamFromFile(tmp_RTI_file));
         // Create line counter variable
         unsigned int line_counter = 0;
 
@@ -68,8 +67,6 @@ void parse_stream(
             rti_stream >> tmp_str;
             glon = stod(tmp_str, &sz);
             
-            std::cout << "\nLat: " << glat << "\tLon: " << glon << std::endl;
-
             // Finish reading RTI line
             for (auto wIdx=0; wIdx<(words_in_line-(glat_word_counter+1)); ++wIdx)
                 rti_stream >> tmp_str;
@@ -79,7 +76,7 @@ void parse_stream(
             RTI_tree.Fill();
         }
         
-        std::cout << "\nHas been read " << lines << " lines from: " << tmp_RTI_file << std::endl;
+        std::cout << "\nHas been read " << line_counter << " lines from: " << tmp_RTI_file << std::endl;
     }
 }
 
