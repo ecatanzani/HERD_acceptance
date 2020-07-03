@@ -27,6 +27,7 @@ def getListOfFiles(opts):
             for file in tmpfiles:
                 fileList.append(file)
 
+    fileList.sort()
     return fileList
 
 def main(args=None):
