@@ -2,6 +2,9 @@
 #include "acceptance_simu.h"
 #include "extractor.h"
 
+#include "healpix_base.h"
+#include "chealpix.h"
+
 #include <memory>
 
 #include "TFile.h"
@@ -9,6 +12,8 @@
 #include "TH1D.h"
 #include "TH2D.h"
 #include "TRandom3.h"
+
+#define nside 32
 
 void evaluateEventMap(
     const std::string accPath,
@@ -18,6 +23,7 @@ void evaluateEventMap(
 {   
     UInt_t rand_seed = 2;
     TRandom3 rgen(rand_seed);
+    auto npix = nside2npix(nside); 
 
     TFile acceptance_file(accPath.c_str(), "READ");
     if (acceptance_file.IsZombie())
@@ -31,7 +37,9 @@ void evaluateEventMap(
     h_calo_filtered_fidvolume->SetDirectory(0);
     h_mcgenspectrum->SetDirectory(0);
     std::vector<std::shared_ptr<TH2D>> h_event_distribution (h_calo_filtered_fidvolume->GetNbinsX());
-    
+    std::vector<std::vector<unsigned int>> pixel_dataMap (h_calo_filtered_fidvolume->GetNbinsX());
+    init_data_maps(pixel_dataMap, npix);
+
     for (auto it=h_event_distribution.begin(); it!=h_event_distribution.end(); ++it)
     {   
         std::string histo_tmp_name = "h_angularDistribution_energyBin_" + std::to_string(std::distance(h_event_distribution.begin(), it));
@@ -67,11 +75,22 @@ void evaluateEventMap(
         }
 
         extract_from_distribution(
+            nside,
             h_event_distribution,
             old_pointing,
             pointing,
-            rgen);
+            rgen,
+            pixel_dataMap);
         
     }
+}
 
+void init_data_maps(std::vector<std::vector<unsigned int>> &pixel_dataMap, const long npix)
+{
+    for (unsigned int idx=0; idx<pixel_dataMap.size(); ++idx)
+    {
+        pixel_dataMap[idx].resize(npix);
+        for (unsigned int sIdx=0; sIdx<pixel_dataMap[idx].size(); ++sIdx)
+            pixel_dataMap[idx][sIdx] = 0;
+    }
 }
