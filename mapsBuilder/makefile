@@ -22,6 +22,13 @@ S_INC  = $(TOP)/include/
 ANYOPT_SRC = $(TOP)/deps/AnyOption/anyoption.cpp
 ANYOPT_INC = $(TOP)/deps/AnyOption
 
+HEALPIX_CPP_INCLUDE = /HEALPiX/Healpix_3.60/include/healpix_cxx
+HEALPIX_C_INCLUDE = /HEALPiX/Healpix_3.60/include
+HEALPIX_CPP_LIBS_PATH = /HEALPiX/Healpix_3.60/lib
+CFITSIO_LIBS_PATH = /HEALPiX/packages/cfitsio/lib
+
+HEALPIX_CPP_LIBS = -lhealpix_cxx -lchealpix -lhealpix -lsharp
+
 DEBUG_DIR    = Debug/obj
 RELEASE_DIR  = Release/obj
 DEBUG_PROG   = Debug/mapsBuilder
@@ -48,8 +55,8 @@ DEBUG_FLAGS = -g -D_DEBUG -Wall -Wno-unknown-pragmas
 LDFLAGS :=
 #add dips
 ifneq ($(DIPS_INCLUDE),)
-	CC_FLAGS += -I$(DIPS_INCLUDE) -I$(ANYOPT_INC)
-	LDFLAGS += $(DIPS_LIBS) -lTreePlayer
+	CC_FLAGS += -I$(DIPS_INCLUDE) -I$(ANYOPT_INC) -I$(HEALPIX_CPP_INCLUDE) -I$(HEALPIX_C_INCLUDE)
+	LDFLAGS += $(DIPS_LIBS) -lTreePlayer -L$(HEALPIX_CPP_LIBS_PATH) $(HEALPIX_CPP_LIBS) -L$(CFITSIO_LIBS_PATH) -lcfitsio
 endif
 ####################################################
 # Flags by OS
