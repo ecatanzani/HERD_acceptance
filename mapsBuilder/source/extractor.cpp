@@ -31,7 +31,7 @@ void extract_from_distribution(
     const std::vector<double> old_pointing,
     const std::vector<double> pointing,
     const TRandom3 &rgen,
-    std::vector<std::vector<unsigned int>> &pixel_dataMap)
+    std::vector<std::vector<float>> &pixel_dataMap)
 {
     auto base_angle = TMath::ATan((pointing[1]-old_pointing[1])/(pointing[0]-old_pointing[0]))*TMath::RadToDeg();
     

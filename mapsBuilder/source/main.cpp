@@ -51,7 +51,8 @@ int main(int argc, char** argv)
         accPath,
         telPath,
         outPath,
-        verbose
+        verbose,
+        opt
     );
 
     return 0;

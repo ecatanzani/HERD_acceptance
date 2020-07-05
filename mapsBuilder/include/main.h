@@ -13,8 +13,15 @@ extern void evaluateEventMap(
     const std::string accPath,
     const std::string telPath,
     const std::string outPath,
-    const bool verbose);
+    const bool verbose,
+    AnyOption &opt);
 
-extern void init_data_maps(std::vector<std::vector<unsigned int>> &pixel_dataMap, const long npix);
-    
+extern void init_data_maps(
+    std::vector<std::vector<float>> &pixel_dataMap, 
+    const long npix);
+void write_final_maps(
+    std::vector<std::vector<float>> &pixel_dataMap, 
+    const std::string outputPath, 
+    AnyOption &opt);   
+
 #endif

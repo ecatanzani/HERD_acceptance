@@ -1,6 +1,7 @@
 #include "main.h"
 #include "acceptance_simu.h"
 #include "extractor.h"
+#include "unique.h"
 
 #include "healpix_base.h"
 #include "chealpix.h"
@@ -19,7 +20,8 @@ void evaluateEventMap(
     const std::string accPath,
     const std::string telPath,
     const std::string outPath,
-    const bool verbose)
+    const bool verbose,
+    AnyOption &opt)
 {   
     UInt_t rand_seed = 2;
     TRandom3 rgen(rand_seed);
@@ -37,7 +39,7 @@ void evaluateEventMap(
     h_calo_filtered_fidvolume->SetDirectory(0);
     h_mcgenspectrum->SetDirectory(0);
     std::vector<std::shared_ptr<TH2D>> h_event_distribution (h_calo_filtered_fidvolume->GetNbinsX());
-    std::vector<std::vector<unsigned int>> pixel_dataMap (h_calo_filtered_fidvolume->GetNbinsX());
+    std::vector<std::vector<float>> pixel_dataMap (h_calo_filtered_fidvolume->GetNbinsX());
     init_data_maps(pixel_dataMap, npix);
 
     for (auto it=h_event_distribution.begin(); it!=h_event_distribution.end(); ++it)
@@ -83,14 +85,45 @@ void evaluateEventMap(
             pixel_dataMap);
         
     }
+
+    write_final_maps(
+        pixel_dataMap, 
+        outPath, 
+        opt);
+
 }
 
-void init_data_maps(std::vector<std::vector<unsigned int>> &pixel_dataMap, const long npix)
+void init_data_maps(std::vector<std::vector<float>> &pixel_dataMap, const long npix)
 {
     for (unsigned int idx=0; idx<pixel_dataMap.size(); ++idx)
     {
         pixel_dataMap[idx].resize(npix);
         for (unsigned int sIdx=0; sIdx<pixel_dataMap[idx].size(); ++sIdx)
             pixel_dataMap[idx][sIdx] = 0;
+    }
+}
+
+void write_final_maps(
+    std::vector<std::vector<float>> &pixel_dataMap, 
+    const std::string outputPath, 
+    AnyOption &opt)
+{   
+    float fmaps[pixel_dataMap.size()][nside2npix(nside)];
+    for(auto it=pixel_dataMap.begin(); it!=pixel_dataMap.end(); ++it)
+    {
+        auto mapsPath = uniqueOutFile(
+            outputPath, 
+            opt, 
+            std::distance(pixel_dataMap.begin(), it));
+
+        for (unsigned int idx=0; idx<(*it).size(); ++idx)
+            fmaps[std::distance(pixel_dataMap.begin(), it)][idx] = (*it)[idx];
+
+        write_healpix_map(
+            fmaps[std::distance(pixel_dataMap.begin(), it)],
+            nside,
+            mapsPath.c_str(),
+            0,
+            "G");
     }
 }
