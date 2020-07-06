@@ -2,6 +2,7 @@
 
 // Root headers
 #include "TH2D.h"
+#include "TVector3.h"
 
 // HerdSoftware headers
 #include "dataobjects/Line.h"
@@ -146,16 +147,16 @@ namespace Herd
 			return false;
 		}
 
-		Momentum &Mom = mcTruth->primaries[0].initialMomentum;
-		Point &Pos = mcTruth->primaries[0].initialPosition;
-		Line MCtrack(Pos, Mom);
-
-		auto theta_deg = MCtrack.Polar() * 180 / M_PI;
-		auto costheta = cos(MCtrack.Polar());
-		auto phi_deg = MCtrack.Azimuth() * 180 / M_PI;
-		auto phi = MCtrack.Azimuth();
-		auto mcmom = std::sqrt(mcTruth->primaries[0].initialMomentum * mcTruth->primaries[0].initialMomentum);
-		auto ebIdx = getCurrentEnergyBin(mcmom);
+		const auto &primary = mcTruth->primaries.at(0);
+		Herd::Point gencoo = primary.initialPosition;
+		TVector3 genmom (
+			primary.initialMomentum[Herd::RefFrame::Coo::X],
+			primary.initialMomentum[Herd::RefFrame::Coo::Y],
+			primary.initialMomentum[Herd::RefFrame::Coo::Z]);
+		auto costheta = genmom.CosTheta();
+		auto phi = genmom.Phi();
+		auto mom = genmom.Mag();
+		auto ebIdx = getCurrentEnergyBin(mom);
 		
 		histo[ebIdx]->Fill(costheta, phi);
 
