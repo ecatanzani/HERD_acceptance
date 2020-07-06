@@ -16,8 +16,8 @@ std::vector<std::vector<double>> get_events_coordinate(
     {
         evDist->GetRandom2(costheta, phi);
         phi += base_angle;
-        coord[evt][0] = pointing[0] + TMath::ACos(costheta)*TMath::Cos(phi);
-        coord[evt][1] = pointing[1] + TMath::ACos(costheta)*TMath::Sin(phi);
+        coord[evt][0] = pointing[0] + TMath::ACos(costheta)*TMath::RadToDeg()*TMath::Cos(phi);
+        coord[evt][1] = pointing[1] + TMath::ACos(costheta)*TMath::RadToDeg()*TMath::Sin(phi);
         if (coord[evt][1] > 180)
             coord[evt][1] -= 360;
     }
@@ -43,7 +43,9 @@ void extract_from_distribution(
         for (unsigned int idx=0; idx<coord.size(); ++idx)
         {
             long hpix = 0;
-            ang2pix_ring(nside,coord[idx][1],coord[idx][0],&hpix);   
+            std::cout << "\nLatitude: " << coord[idx][1]*TMath::DegToRad();
+            std::cout << "\nLongitude: " << coord[idx][0]*TMath::DegToRad();
+            ang2pix_ring(nside,coord[idx][1]*TMath::DegToRad(),coord[idx][0]*TMath::DegToRad(),&hpix);   
             ++pixel_dataMap[std::distance(h_event_distribution.begin(), it)][hpix];
         }
     }

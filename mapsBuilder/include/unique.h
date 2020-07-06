@@ -8,6 +8,7 @@
 extern const std::string uniqueOutFile(
     const std::string outputPath, 
     AnyOption &opt,
-    const int binIdx);
+    const int binIdx,
+    const bool iss_pointing);
 
 #endif
