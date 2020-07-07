@@ -3,6 +3,7 @@
 #include "TMath.h"
 
 #include <iostream>
+#include <stdlib.h>
 
 std::vector<std::vector<double>> get_events_coordinate(
     const int number_to_extract, 
@@ -15,11 +16,44 @@ std::vector<std::vector<double>> get_events_coordinate(
     for (auto evt=0; evt<number_to_extract; ++evt)
     {
         evDist->GetRandom2(costheta, phi);
+        //phi += TMath::Pi(); // unify respect to the base angle extracted from pointing information
         phi += base_angle;
-        coord[evt][0] = pointing[0] + TMath::ACos(costheta)*TMath::RadToDeg()*TMath::Cos(phi);
-        coord[evt][1] = pointing[1] + TMath::ACos(costheta)*TMath::RadToDeg()*TMath::Sin(phi);
-        if (coord[evt][1] > 180)
-            coord[evt][1] -= 360;
+
+        auto local_lat = TMath::ACos(costheta)*TMath::Sin(phi);
+        auto local_lon = TMath::ACos(costheta)*TMath::Cos(phi);
+
+        coord[evt][1] = pointing[1] + local_lat;
+        coord[evt][0] = pointing[0] + local_lon;
+        
+        while (coord[evt][1]>TMath::Pi())
+            coord[evt][1] -= TMath::Pi();
+
+        while (coord[evt][1]<0)
+            coord[evt][1] += TMath::Pi();
+
+        while (coord[evt][0]>2*TMath::Pi())
+            coord[evt][0] -= 2*TMath::Pi();
+
+        while (coord[evt][0]<0)
+            coord[evt][0] += 2*TMath::Pi();
+
+        /*
+
+        if (coord[evt][1]<0 || coord[evt][0]<0)
+        {
+            std::cout << "\n";
+            std::cout << "\nTheta: " << TMath::ACos(costheta);
+            std::cout << "\nPhi: " << myphi;
+            std::cout << "\nBase angle: " << base_angle;
+            std::cout << "\nLocal LAT: " << local_lat << "\tLocal LON: " << local_lon;
+            std::cout << "\nLAT: " << pointing[1] << "\tLON: " << pointing[0];
+            std::cout << "\nActual LAT: " << coord[evt][1] << "\tActual LON: " << coord[evt][0];
+            std::cout << "\nLAT differeence: " << lat_difference;
+            std::cout << "\nLON difference: " << lon_difference;
+            std::cout << "\n";
+            exit(123);
+        }
+        */
     }
 
     return coord;
@@ -33,8 +67,9 @@ void extract_from_distribution(
     const TRandom3 &rgen,
     std::vector<std::vector<float>> &pixel_dataMap)
 {
-    auto base_angle = TMath::ATan((pointing[1]-old_pointing[1])/(pointing[0]-old_pointing[0]))*TMath::RadToDeg();
-    
+    auto base_angle = TMath::ATan2((pointing[1]-old_pointing[1]),(pointing[0]-old_pointing[0]));
+    //std::cout << "\nBase angle: " << base_angle;
+
     // Extract from energy bin map
     for (auto it=h_event_distribution.begin(); it!=h_event_distribution.end(); ++it)
     {
@@ -43,9 +78,8 @@ void extract_from_distribution(
         for (unsigned int idx=0; idx<coord.size(); ++idx)
         {
             long hpix = 0;
-            std::cout << "\nLatitude: " << coord[idx][1]*TMath::DegToRad();
-            std::cout << "\nLongitude: " << coord[idx][0]*TMath::DegToRad();
-            ang2pix_ring(nside,coord[idx][1]*TMath::DegToRad(),coord[idx][0]*TMath::DegToRad(),&hpix);   
+            //std::cout << "\nTO HEALPIX: Actual LAT: " << coord[idx][1] << "\tActual LON: " << coord[idx][0];
+            ang2pix_ring(nside,coord[idx][1],coord[idx][0],&hpix);   
             ++pixel_dataMap[std::distance(h_event_distribution.begin(), it)][hpix];
         }
     }

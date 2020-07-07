@@ -79,17 +79,13 @@ void evaluateEventMap(
             std::cout << "\n[Event Loop]: " << idx+1;
         
         RTItree->GetEntry(idx);
-        
-        //std::cout <<"\nLat before: " << pointing[1] << std::endl;
-
-         // Use healpix convention for pointing
+         
+        // Use healpix convention for pointing
         pointing[1] += 90;
         pointing[1] *= TMath::DegToRad();
 
         pointing[0] += 180;
         pointing[0] *= TMath::DegToRad();
-        
-        //std::cout << "\nTheta: " << pointing[1] << "\tPhi: " << pointing[0] << std::endl;
 
         // Fill pointing map
         long hpix;
@@ -101,8 +97,7 @@ void evaluateEventMap(
             old_pointing = pointing;
             continue;
         }
-
-        /*
+        
         extract_from_distribution(
             nside,
             h_event_distribution,
@@ -110,7 +105,6 @@ void evaluateEventMap(
             pointing,
             rgen,
             pixel_dataMap);
-        */
     }
 
     auto mapsPath = uniqueOutFile(
@@ -125,13 +119,12 @@ void evaluateEventMap(
         mapsPath.c_str(),
         0,
         "G");
-
-    /*
+    
     write_final_maps(
         pixel_dataMap, 
         outPath, 
         opt);
-    */
+    
 }
 
 void init_data_maps(std::vector<std::vector<float>> &pixel_dataMap, const long npix)
@@ -155,7 +148,7 @@ void write_final_maps(
         auto mapsPath = uniqueOutFile(
             outputPath, 
             opt, 
-            std::distance(pixel_dataMap.begin(), it), false);
+            std::distance(pixel_dataMap.begin(), it));
 
         for (unsigned int idx=0; idx<(*it).size(); ++idx)
             fmaps[std::distance(pixel_dataMap.begin(), it)][idx] = (*it)[idx];

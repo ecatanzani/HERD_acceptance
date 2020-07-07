@@ -22,7 +22,6 @@ extern void init_data_maps(
 void write_final_maps(
     std::vector<std::vector<float>> &pixel_dataMap, 
     const std::string outputPath, 
-    AnyOption &opt,
-    const bool iss_pointing=false);   
+    AnyOption &opt);   
 
 #endif
