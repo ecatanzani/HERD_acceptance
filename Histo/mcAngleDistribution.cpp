@@ -133,6 +133,12 @@ namespace Herd
 				azimuth_axispar[0], azimuth_axispar[1], azimuth_axispar[2]);
 		}
 
+		h_gen_theta_phi = std::make_shared<TH2D>(
+			"h_gen_theta_phi", 
+			"gen #theta/#phi distribution", 
+			polar_axispar[0], polar_axispar[1], polar_axispar[2],
+			azimuth_axispar[0], azimuth_axispar[1], azimuth_axispar[2]);
+
 		return true;
 	}
 
@@ -147,18 +153,20 @@ namespace Herd
 			return false;
 		}
 
-		const auto &primary = mcTruth->primaries.at(0);
-		Herd::Point gencoo = primary.initialPosition;
-		TVector3 genmom (
-			primary.initialMomentum[Herd::RefFrame::Coo::X],
-			primary.initialMomentum[Herd::RefFrame::Coo::Y],
-			primary.initialMomentum[Herd::RefFrame::Coo::Z]);
-		auto costheta = genmom.CosTheta();
-		auto phi = genmom.Phi();
-		auto mom = genmom.Mag();
-		auto ebIdx = getCurrentEnergyBin(mom);
+		Momentum &Mom = mcTruth->primaries[0].initialMomentum;
+		Point &Pos = mcTruth->primaries[0].initialPosition;
+		Line MCtrack(Pos, Mom);
+
+		auto theta_deg = MCtrack.Polar() * 180 / M_PI;
+		auto costheta = cos(MCtrack.Polar());
+		auto phi_deg = MCtrack.Azimuth() * 180 / M_PI;
+		auto phi = MCtrack.Azimuth();
+		auto mcmom = std::sqrt(mcTruth->primaries[0].initialMomentum * mcTruth->primaries[0].initialMomentum);
+		auto ebIdx = getCurrentEnergyBin(mcmom);
 		
 		histo[ebIdx]->Fill(costheta, phi);
+
+		h_gen_theta_phi->Fill(costheta, phi);
 
 		return true;
 	}
@@ -176,6 +184,8 @@ namespace Herd
 		// Book histos to the global store
 		for (auto hIdx=0; hIdx<histo.size(); ++hIdx)
 			globStore->AddObject(histo[hIdx]->GetName(), histo[hIdx]);
+
+		globStore->AddObject(h_gen_theta_phi->GetName(), h_gen_theta_phi);
 
 		return true;
 	}

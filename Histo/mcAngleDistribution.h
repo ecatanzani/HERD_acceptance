@@ -35,6 +35,7 @@ namespace Herd
 
         // Created global objects
         std::vector<std::shared_ptr<TH2D>> histo;
+        std::shared_ptr<TH2D> h_gen_theta_phi;
 
         // Utility variables
         observer_ptr<EventDataStore> _evStore; // Pointer to the event data store
