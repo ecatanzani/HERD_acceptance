@@ -32,7 +32,7 @@ void fluxFitter(const char* inFluxPath)
             mg->Add(static_cast<TGraphAsymmErrors *>(key->ReadObj()));
     }
 
-    TF1 fitFunc("fitFunc", "[0] + [1]*log10(x+1) + [2]*pow(log10(x+1),2) +[3]*pow(log10(x+1),3) +[4]*pow(log10(x+1),4) ", 1e-2, 1e+4);
+    TF1 fitFunc("fitFunc", "pow(10, [0] + [1]*log10(x) + [2]*pow(log10(x),2) +[3]*pow(log10(x),3) +[4]*pow(log10(x),4) ) ", 1, 1e+4);
     fitFunc.SetNpx(10000);
     mg->Fit("fitFunc", "IR");
 
