@@ -1,19 +1,20 @@
 #include "extractor.h"
 
 #include "TMath.h"
+#include "TAxis.h"
 
 #include <iostream>
 #include <stdlib.h>
 
 std::vector<std::vector<double>> get_events_coordinate(
-    const int number_to_extract, 
+    const unsigned int number_to_extract, 
     const double base_angle, 
     const std::shared_ptr<TH2D> evDist,
     const std::vector<double> pointing)
 {
     std::vector<std::vector<double>> coord(number_to_extract, std::vector<double>(2, 0));
     double costheta, phi;
-    for (auto evt=0; evt<number_to_extract; ++evt)
+    for (unsigned int evt=0; evt<number_to_extract; ++evt)
     {
         evDist->GetRandom2(costheta, phi);
         //phi += TMath::Pi(); // unify respect to the base angle extracted from pointing information
@@ -64,8 +65,12 @@ void extract_from_distribution(
     const std::vector<std::shared_ptr<TH2D>> h_event_distribution,
     const std::vector<double> old_pointing,
     const std::vector<double> pointing,
-    const TRandom3 &rgen,
-    std::vector<std::vector<float>> &pixel_dataMap)
+    const double geo_lat,
+    TRandom3 &rgen,
+    std::vector<std::vector<float>> &pixel_dataMap,
+    const TF1 &fitFunc,
+    const std::shared_ptr<TH1D> acceptance,
+    const std::shared_ptr<TH1D> live_time)
 {
     auto base_angle = TMath::ATan2((pointing[1]-old_pointing[1]),(pointing[0]-old_pointing[0]));
     //std::cout << "\nBase angle: " << base_angle;
@@ -73,7 +78,15 @@ void extract_from_distribution(
     // Extract from energy bin map
     for (auto it=h_event_distribution.begin(); it!=h_event_distribution.end(); ++it)
     {
-        auto number_to_extract = 10;    // To be calculated including the flux and the livetime simulation
+        // Compute the number of points to extract
+        auto number_to_extract = GetNumberToExtract(
+            fitFunc, 
+            acceptance, 
+            live_time,
+            (int)std::distance(h_event_distribution.begin(), it),
+            geo_lat,
+            rgen);
+
         auto coord = get_events_coordinate(number_to_extract, base_angle, *it, pointing);
         for (unsigned int idx=0; idx<coord.size(); ++idx)
         {
@@ -83,4 +96,32 @@ void extract_from_distribution(
             ++pixel_dataMap[std::distance(h_event_distribution.begin(), it)][hpix];
         }
     }
+}
+
+unsigned int GetNumberToExtract(
+    TF1 fitFunc,
+    const std::shared_ptr<TH1D> acceptance,
+    const std::shared_ptr<TH1D> live_time,
+    const int binIdx,
+    const double geo_lat,
+    TRandom3 &rgen)
+{   
+    std::unique_ptr<TH1D> h_acqRate (static_cast<TH1D*>(acceptance->Clone("h_acqRate")));
+    auto multiplyStatus = h_acqRate->Multiply(&fitFunc);
+    if (!multiplyStatus)
+        std::cout << "\nERROR during TF1 multiplication" << std::endl;
+    double energyWidth = acceptance->GetBinWidth(binIdx);
+    double bin_rate = h_acqRate->GetBinContent(binIdx)*energyWidth;
+    double live_time_value = live_time->GetBinContent(live_time->GetXaxis()->FindBin(geo_lat));  
+    double mean_number_of_events = bin_rate * live_time_value;
+    
+    unsigned int events = rgen.Poisson(mean_number_of_events);
+
+    /*
+    std::cout << "\nBin rate: " << bin_rate;
+    std::cout << "\nLivetime: " << live_time_value;
+    std::cout << "\nNumber of points: " << events << std::endl;
+    */
+   
+    return events;
 }

@@ -4,17 +4,24 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "anyoption.h"
+
+#include "TF1.h"
+#include "TH1D.h"
 
 #pragma once
 
 extern void evaluateEventMap(
-    const std::string accPath,
+    const std::string evtPath,
     const std::string telPath,
     const std::string outPath,
     const bool verbose,
-    AnyOption &opt);
+    AnyOption &opt,
+    const TF1 &fitFunc,
+    const std::shared_ptr<TH1D> acceptance,
+    const std::shared_ptr<TH1D> live_time);
 
 extern void init_data_maps(
     std::vector<std::vector<float>> &pixel_dataMap, 
