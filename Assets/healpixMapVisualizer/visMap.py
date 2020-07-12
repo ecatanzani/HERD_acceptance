@@ -11,10 +11,16 @@ def main(args=None):
         usage="Usage: %(prog)s [options]", description="Healpix map visualizer")
 
     parser.add_argument("-m", "--map", type=str, dest='input', help='Input map')
+    parser.add_argument("-l", "--log", dest='log', default=False, action='store_true', help='log scale (min value set to 1)')
+
     opts = parser.parse_args(args)
 
     hpx = hp.read_map(opts.input)
-    hp.mollview(hpx, coord="G", norm='log', min=1)
+    if opts.log:
+        hp.mollview(hpx, coord="G", norm='log', min = 1)
+    else:
+        hp.mollview(hpx, coord="G", norm='None')
+    
     hp.graticule()
     plt.show()
 
