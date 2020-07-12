@@ -5,7 +5,7 @@ Plugin acceptanceAlgo
 Plugin RootPersistence
 Plugin HerdAlgorithms
 
-DataProvider RootDataProvider rootProvider allDataList.txt
+DataProvider RootDataProvider rootProvider datalist.txt
   AttachToStore   evStore    event
   AttachToStore   globStore  global
 
@@ -26,8 +26,8 @@ EventLoop
   	# Compute generation spectrum
   	Algo mcGenSpectrum mcgenspectrum
 	  	Set logaxis true
-  		Set axispar {50, 1e+1, 1e+4}
-  		Set momrange {1e+1,1e+4}
+  		Set axispar {30, 1e+1, 1e+4}
+  		Set momrange {1e+3,1e+4}
 
   	# Cut about polar angle
 	Algo PolarAngleCut polarAngleCut
@@ -35,7 +35,7 @@ EventLoop
 
 	# Plot the polar filtered events
   	Algo mcEnergyHisto polar_filtered
-  		Set axispar {50, 1e+1, 1e+4}
+  		Set axispar {30, 1e+1, 1e+4}
   		Set logaxis true
   		Set title mcPolarFilteredEvents
     
@@ -48,7 +48,7 @@ EventLoop
 
 	# Plot filtered X0 calo tracks
     Algo mcEnergyHisto X0_filtered
-    	Set axispar {50, 1e+1, 1e+4}
+    	Set axispar {30, 1e+1, 1e+4}
     	Set logaxis true
     	Set title MCtrack
 
@@ -60,13 +60,13 @@ EventLoop
 
 	# Plot filtered BGO fiducial volume events
     Algo mcEnergyHisto calo_filtered_fidvolume
-        Set axispar {50, 1e+1, 1e+4}
+        Set axispar {30, 1e+1, 1e+4}
         Set logaxis true
         Set title CALO_fid_volume
 
 	# Plot events angular distribution for energy bin
     Algo mcAngleDistribution angularDistribution
-        Set energy_axispar {50, 1e+1, 1e+4}
+        Set energy_axispar {30, 1e+1, 1e+4}
         Set logaxis true
         Set title mcAngularDistribution_eBin
 
