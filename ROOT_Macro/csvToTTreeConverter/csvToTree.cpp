@@ -85,7 +85,7 @@ void parse_stream(
             {
                 wcounter=0;
                 ++line_counter;
-                geo_lat = (1-thetas)*TMath::RadToDeg();
+                geo_lat = thetas*TMath::RadToDeg();
                 geo_lon = phi*TMath::RadToDeg();
                 RTI_tree.Fill();
             }
