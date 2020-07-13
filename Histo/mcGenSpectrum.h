@@ -30,6 +30,7 @@ private:
   
 
   unsigned int ngen;
+  int index;
   std::vector<double> momrange;
   
   std::shared_ptr<TH1D> histo; // Objects to be pushed on global store must be held by a shared_ptr

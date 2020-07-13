@@ -14,12 +14,14 @@ mcGenSpectrum::mcGenSpectrum(const std::string &name) : Algorithm{name},
 														axispar{100., 1., 100000.},
 														logaxis{true},
 														title("title"),
-														momrange{-1., -1.}
+														momrange{-1., -1.},
+														index{-1}
 {
 	DefineParameter("axispar", axispar);
 	DefineParameter("logaxis", logaxis);
 	DefineParameter("title", title);
 	DefineParameter("momrange", momrange);
+	DefineParameter("index", index);
 }
 
 bool mcGenSpectrum::Initialize()
@@ -88,18 +90,22 @@ bool mcGenSpectrum::Process()
 bool mcGenSpectrum::Finalize()
 {
 	const std::string routineName("mcGenSpectrum::Finalize");
-	
+
 	for (auto bIdx = 1; bIdx < histo->GetNbinsX(); ++bIdx)
 	{
-		if (histo->GetBinLowEdge(bIdx + 1) < momrange[0]) //bin is outside range of generated values
+		if (histo->GetBinLowEdge(bIdx + 1) < momrange[0]) 
 			histo->SetBinContent(bIdx, 0);
-		else if (histo->GetBinLowEdge(bIdx) > momrange[1]) //bin is outside range of generated values
+		else if (histo->GetBinLowEdge(bIdx) > momrange[1]) 
 			histo->SetBinContent(bIdx, 0);
-		else //bin is inside range of generated values
+		else
 		{
 			double lowedge = std::max(histo->GetBinLowEdge(bIdx), momrange[0]);
 			double highedge = std::min(histo->GetBinLowEdge(bIdx + 1), momrange[1]);
-			double w = (log10(highedge) - log10(lowedge)) / (log10(momrange[1]) - log10(momrange[0]));
+			double w = 0;
+			if (index == -1)
+				w = (log10(highedge) - log10(lowedge)) / (log10(momrange[1]) - log10(momrange[0]));
+			else
+				w = (1./(1-index))/(pow(highedge, -index + 1) - pow(lowedge, -index +1));
 			histo->SetBinContent(bIdx, ngen * w);
 		}
 	}
