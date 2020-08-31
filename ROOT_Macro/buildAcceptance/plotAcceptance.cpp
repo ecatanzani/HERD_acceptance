@@ -71,6 +71,7 @@ void buildAcceptance(const char* LE_dataFile, const char* HE_dataFile, const cha
 	}
 
 	h_selected->Write();
+	h_generated->Write();
 
 	myOutFile.Close();
 

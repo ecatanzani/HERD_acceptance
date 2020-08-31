@@ -91,7 +91,7 @@ bool mcGenSpectrum::Finalize()
 {
 	const std::string routineName("mcGenSpectrum::Finalize");
 
-	for (auto bIdx = 1; bIdx < histo->GetNbinsX(); ++bIdx)
+	for (int bIdx = 1; bIdx < histo->GetNbinsX(); ++bIdx)
 	{
 		if (histo->GetBinLowEdge(bIdx + 1) < momrange[0]) 
 			histo->SetBinContent(bIdx, 0);
@@ -105,7 +105,10 @@ bool mcGenSpectrum::Finalize()
 			if (index == -1)
 				w = (log10(highedge) - log10(lowedge)) / (log10(momrange[1]) - log10(momrange[0]));
 			else
+			{
 				w = (1./(1-index))/(pow(highedge, -index + 1) - pow(lowedge, -index +1));
+				w /= (1./(1-index))/(pow(momrange[1], -index + 1) - pow(momrange[0], -index +1))
+			}
 			histo->SetBinContent(bIdx, ngen * w);
 		}
 	}

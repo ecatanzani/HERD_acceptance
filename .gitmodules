@@ -1,3 +1,0 @@
-[submodule "mapsBuilder/deps/AnyOption"]
-	path = mapsBuilder/deps/AnyOption
-	url = git@github.com:hackorama/AnyOption.git
